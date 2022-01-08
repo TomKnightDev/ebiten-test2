@@ -1,0 +1,46 @@
+{
+    "tileshigh": 1,
+    "layers": [
+        {
+            "tiles": [
+                {
+                    "x": 0,
+                    "rot": 0,
+                    "y": 0,
+                    "index": 0,
+                    "flipX": false,
+                    "tile": 99
+                },
+                {
+                    "x": 1,
+                    "rot": 0,
+                    "y": 0,
+                    "index": 1,
+                    "flipX": false,
+                    "tile": 102
+                },
+                {
+                    "x": 2,
+                    "rot": 0,
+                    "y": 0,
+                    "index": 2,
+                    "flipX": false,
+                    "tile": 105
+                },
+                {
+                    "x": 3,
+                    "rot": 0,
+                    "y": 0,
+                    "index": 3,
+                    "flipX": false,
+                    "tile": 108
+                }
+            ],
+            "name": "Layer 0",
+            "number": 0
+        }
+    ],
+    "tileheight": 8,
+    "tileswide": 4,
+    "tilewidth": 8
+}
