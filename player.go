@@ -7,13 +7,10 @@ import (
 	"golang.org/x/image/math/f64"
 )
 
-func newPlayer() *entity {
+func newPlayer(game *Game, pos f64.Vec2) *entity {
 	player := &entity{}
 
-	player.position = f64.Vec2{
-		0: 0,
-		1: 0,
-	}
+	player.position = pos
 
 	player.active = true
 
@@ -46,7 +43,10 @@ func newPlayer() *entity {
 	sr := newSpriteRenderer(player, ips[0])
 	player.addComponent(sr)
 
-	Entities = append(Entities, player)
+	bc := newBoxCollider(player, game)
+	player.addComponent(bc)
+
+	game.entities = append(game.entities, player)
 
 	return player
 }

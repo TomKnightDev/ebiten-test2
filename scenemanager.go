@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/solarlune/resolv"
 )
 
 var (
@@ -13,28 +12,22 @@ var (
 
 // const transitionMaxCount = 20
 
-type GameState struct {
-	SceneManager *SceneManager
-	Space        *resolv.Space
-	// Input        *Input
-}
-
 type SceneManager struct {
 	current *entity
 	next    *entity
 }
 
-func (s *SceneManager) Update() error {
+func (s *SceneManager) Update(game *Game) error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		s.GoTo(newMainScene())
+		s.GoTo(newMainScene(game))
 	}
 
-	for _, e := range Entities {
+	for _, e := range game.entities {
 		if !e.active {
 			continue
 		}
 		for _, c := range e.components {
-			err := c.Update()
+			err := c.Update(game)
 			if err != nil {
 				panic(err)
 			}
@@ -44,7 +37,7 @@ func (s *SceneManager) Update() error {
 }
 
 func (s *SceneManager) Draw(screen *ebiten.Image, game *Game) {
-	for _, e := range Entities {
+	for _, e := range game.entities {
 		if !e.active {
 			continue
 		}

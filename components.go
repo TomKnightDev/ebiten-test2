@@ -5,11 +5,12 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/solarlune/resolv"
 	"golang.org/x/image/math/f64"
 )
 
 type component interface {
-	Update() error
+	Update(game *Game) error
 	Draw(screen *ebiten.Image, game *Game)
 }
 
@@ -28,16 +29,16 @@ func newSpriteRenderer(container *entity, ip imagePos) *spriteRenderer {
 	}
 }
 
-func (s *spriteRenderer) Update() error {
+func (s *spriteRenderer) Update(game *Game) error {
 	return nil
 }
 
 func (s *spriteRenderer) Draw(screen *ebiten.Image, game *Game) {
-	m := ebiten.GeoM{}
-	// m.Scale(1, 1)
+	c := s.container.getComponent(&Camera{}).(*Camera)
+	m := c.worldMatrix()
 	m.Translate(s.container.position[0], s.container.position[1])
 
-	game.world.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
+	screen.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
 		GeoM: m,
 	})
 }
@@ -73,7 +74,7 @@ func newSpritesRenderer(container *entity, images []imagePos) *spritesRenderer {
 	}
 }
 
-func (s *spritesRenderer) Update() error {
+func (s *spritesRenderer) Update(game *Game) error {
 	return nil
 }
 
@@ -83,7 +84,7 @@ func (s *spritesRenderer) Draw(screen *ebiten.Image, game *Game) {
 		// m.Scale(1, 1)
 		m.Translate(imageTile.position[0], imageTile.position[1])
 
-		game.world.DrawImage(imageTile.image, &ebiten.DrawImageOptions{
+		game.worldImage.DrawImage(imageTile.image, &ebiten.DrawImageOptions{
 			GeoM: m,
 		})
 	}
@@ -99,7 +100,7 @@ func newUiRenderer(container *entity) *uiRenderer {
 	}
 }
 
-func (u *uiRenderer) Update() error {
+func (u *uiRenderer) Update(game *Game) error {
 	return nil
 }
 
@@ -117,7 +118,7 @@ func newInput(container *entity) *input {
 	}
 }
 
-func (i *input) Update() error {
+func (i *input) Update(game *Game) error {
 	c := i.container
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		c.position[0] -= 1
@@ -144,5 +145,42 @@ func (i *input) Update() error {
 }
 
 func (i *input) Draw(screen *ebiten.Image, game *Game) {
+
+}
+
+type boxCollider struct {
+	container *entity
+	collider  *resolv.Object
+}
+
+func newBoxCollider(container *entity, game *Game) *boxCollider {
+	bc := &boxCollider{
+		container: container,
+		collider:  resolv.NewObject(container.position[0], container.position[1], 8, 8),
+	}
+
+	game.space.Add(bc.collider)
+	return bc
+}
+
+func (b *boxCollider) Update(game *Game) error {
+	x := b.container.position[0] - b.collider.X
+	y := b.container.position[1] - b.collider.Y
+
+	if collision := b.collider.Check(x, y); collision != nil {
+		b.container.position[0] = b.collider.X
+		b.container.position[1] = b.collider.Y
+		// if len(collision.ObjectsByTags("wall")) > 0 {
+		// 	return true
+		// }
+	} else {
+		b.collider.X = b.container.position[0]
+		b.collider.Y = b.container.position[1]
+	}
+
+	return nil
+}
+
+func (b *boxCollider) Draw(screen *ebiten.Image, game *Game) {
 
 }

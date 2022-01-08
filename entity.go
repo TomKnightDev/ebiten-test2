@@ -14,8 +14,6 @@ type entity struct {
 	components []component
 }
 
-var Entities []*entity
-
 func (e *entity) addComponent(comp component) {
 	for _, ec := range e.components {
 		if reflect.TypeOf(ec) == reflect.TypeOf(comp) {

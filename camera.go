@@ -24,22 +24,22 @@ func newCamera(container *entity) *Camera {
 	return c
 }
 
-func (c *Camera) Update() error {
+func (c *Camera) Update(game *Game) error {
 	c.Position = f64.Vec2{
-		0: c.container.position[0] - (screenWidth / 2),
-		1: c.container.position[1] - (screenHeight / 2),
+		0: c.container.position[0] - c.viewportCenter()[0],
+		1: c.container.position[1] - c.viewportCenter()[1],
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyQ) {
-		if c.ZoomFactor > -2400 {
-			c.ZoomFactor -= 1
-		}
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyE) {
-		if c.ZoomFactor < 2400 {
-			c.ZoomFactor += 1
-		}
-	}
+	// if ebiten.IsKeyPressed(ebiten.KeyQ) {
+	// 	if c.ZoomFactor > -2400 {
+	// 		c.ZoomFactor -= 1
+	// 	}
+	// }
+	// if ebiten.IsKeyPressed(ebiten.KeyE) {
+	// 	if c.ZoomFactor < 2400 {
+	// 		c.ZoomFactor += 1
+	// 	}
+	// }
 
 	return nil
 }
@@ -70,7 +70,7 @@ func (c *Camera) worldMatrix() ebiten.GeoM {
 }
 
 func (c *Camera) Render(screen *ebiten.Image, game *Game) {
-	screen.DrawImage(game.world, &ebiten.DrawImageOptions{
+	screen.DrawImage(game.worldImage, &ebiten.DrawImageOptions{
 		GeoM: c.worldMatrix(),
 	})
 }

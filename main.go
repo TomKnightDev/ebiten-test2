@@ -9,6 +9,7 @@ import (
 	_ "embed"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/solarlune/resolv"
 )
 
 const (
@@ -47,8 +48,10 @@ func init() {
 }
 
 func main() {
-	g := &Game{}
-	g.world = ebiten.NewImage(worldWidth, worldHeight)
+	g := &Game{
+		space: resolv.NewSpace(384, 384, 4, 4),
+	}
+	g.worldImage = ebiten.NewImage(worldWidth, worldHeight)
 
 	ebiten.SetWindowSize(screenWidth*3, screenHeight*3)
 	ebiten.SetWindowTitle("Ebiten-test2")

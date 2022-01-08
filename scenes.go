@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"image"
 
+	"github.com/solarlune/resolv"
 	"golang.org/x/image/math/f64"
 )
 
-func newTitleScene() *entity {
+func newTitleScene(game *Game) *entity {
 	titleScene := &entity{}
 	titleScene.name = "Title Scene"
 	titleScene.position = f64.Vec2{
@@ -20,11 +21,11 @@ func newTitleScene() *entity {
 	ur := newUiRenderer(titleScene)
 	titleScene.addComponent(ur)
 
-	Entities = append(Entities, titleScene)
+	game.entities = append(game.entities, titleScene)
 	return titleScene
 }
 
-func newMainScene() *entity {
+func newMainScene(game *Game) *entity {
 	mainScene := &entity{}
 
 	mainScene.position = f64.Vec2{
@@ -46,7 +47,9 @@ func newMainScene() *entity {
 
 	for l := len(tileMap.Layers) - 1; l >= 0; l-- {
 		for _, t := range tileMap.Layers[l].Tiles {
-			if tileMap.Layers[l].Name == "Obstacles" {
+			if tileMap.Layers[l].Name == "Obstacles" && t.Tile >= 0 {
+				o := resolv.NewObject(float64(t.X*tileSize), float64(t.Y*tileSize), 8, 8, "wall")
+				game.space.Add(o)
 				continue
 			}
 
@@ -65,10 +68,13 @@ func newMainScene() *entity {
 
 	sr := newSpritesRenderer(mainScene, ips)
 	mainScene.addComponent(sr)
-	Entities = append(Entities, mainScene)
+	game.entities = append(game.entities, mainScene)
 
 	// TODO: Move to better place
-	newPlayer()
+	newPlayer(game, f64.Vec2{
+		0: 18 * tileSize,
+		1: 15 * tileSize,
+	})
 
 	return mainScene
 }
