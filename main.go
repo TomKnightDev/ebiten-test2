@@ -34,7 +34,9 @@ var (
 	//go:embed resources/map001.json
 	map001 []byte
 	//go:embed resources/player1.json
-	player1    []byte
+	player1 []byte
+	//go:embed resources/enemy1.json
+	enemy1     []byte
 	tilesImage *ebiten.Image
 	tileMap    TileMap
 )

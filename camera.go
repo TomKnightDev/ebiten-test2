@@ -44,8 +44,10 @@ func (c *Camera) Update(game *Game) error {
 	return nil
 }
 
-func (c *Camera) Draw(screen *ebiten.Image, game *Game) {
+func (c *Camera) Draw(screen *ebiten.Image, game *Game) []imageTile {
 	c.Render(screen, game)
+
+	return []imageTile{}
 }
 
 func (c *Camera) viewportCenter() f64.Vec2 {

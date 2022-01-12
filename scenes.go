@@ -17,6 +17,7 @@ func newTitleScene(game *Game) *entity {
 	}
 
 	titleScene.active = true
+	titleScene.tags = append(titleScene.tags, Scene)
 
 	ur := newUiRenderer(titleScene)
 	titleScene.addComponent(ur)
@@ -34,6 +35,7 @@ func newMainScene(game *Game) *entity {
 	}
 
 	mainScene.active = true
+	mainScene.tags = append(mainScene.tags, Scene)
 
 	ur := newUiRenderer(mainScene)
 	mainScene.addComponent(ur)
@@ -74,6 +76,21 @@ func newMainScene(game *Game) *entity {
 	newPlayer(game, f64.Vec2{
 		0: 18 * tileSize,
 		1: 15 * tileSize,
+	})
+
+	newEnemy(game, f64.Vec2{
+		0: 20 * tileSize,
+		1: 18 * tileSize,
+	})
+
+	newEnemy(game, f64.Vec2{
+		0: 21 * tileSize,
+		1: 18 * tileSize,
+	})
+
+	newEnemy(game, f64.Vec2{
+		0: 20 * tileSize,
+		1: 19 * tileSize,
 	})
 
 	return mainScene

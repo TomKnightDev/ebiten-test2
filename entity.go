@@ -12,6 +12,7 @@ type entity struct {
 	rotation   float64
 	active     bool
 	components []component
+	tags       []Tag
 }
 
 func (e *entity) addComponent(comp component) {
@@ -33,5 +34,14 @@ func (e *entity) getComponent(withType component) component {
 		}
 	}
 
-	panic("Component not found")
+	// panic("Component not found")
+	return nil
 }
+
+type Tag int
+
+const (
+	Player Tag = iota
+	Enemy
+	Scene
+)

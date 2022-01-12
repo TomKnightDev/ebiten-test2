@@ -2,6 +2,7 @@ package main
 
 import (
 	"image"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -11,7 +12,7 @@ import (
 
 type component interface {
 	Update(game *Game) error
-	Draw(screen *ebiten.Image, game *Game)
+	Draw(screen *ebiten.Image, game *Game) []imageTile
 }
 
 type spriteRenderer struct {
@@ -33,14 +34,32 @@ func (s *spriteRenderer) Update(game *Game) error {
 	return nil
 }
 
-func (s *spriteRenderer) Draw(screen *ebiten.Image, game *Game) {
-	c := s.container.getComponent(&Camera{}).(*Camera)
-	m := c.worldMatrix()
-	m.Translate(s.container.position[0], s.container.position[1])
+func (s *spriteRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	c := s.container.getComponent(&Camera{})
 
-	screen.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
-		GeoM: m,
-	})
+	if c != nil {
+		m := c.(*Camera).worldMatrix()
+		m.Translate(s.container.position[0], s.container.position[1])
+
+		screen.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
+			GeoM: m,
+		})
+
+		return []imageTile{}
+	} else {
+		return []imageTile{{
+			image:    s.imageTile.image,
+			position: s.container.position,
+			zOrder:   s.imageTile.zOrder,
+		}}
+
+		// m := ebiten.GeoM{}
+		// m.Translate(s.container.position[0], s.container.position[1])
+
+		// game.worldImage.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
+		// 	GeoM: m,
+		// })
+	}
 }
 
 type spritesRenderer struct {
@@ -51,6 +70,7 @@ type spritesRenderer struct {
 type imageTile struct {
 	image    *ebiten.Image
 	position f64.Vec2
+	zOrder   int
 }
 
 type imagePos struct {
@@ -78,16 +98,18 @@ func (s *spritesRenderer) Update(game *Game) error {
 	return nil
 }
 
-func (s *spritesRenderer) Draw(screen *ebiten.Image, game *Game) {
-	for _, imageTile := range s.imageTiles {
-		m := ebiten.GeoM{}
-		// m.Scale(1, 1)
-		m.Translate(imageTile.position[0], imageTile.position[1])
+func (s *spritesRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	return s.imageTiles
 
-		game.worldImage.DrawImage(imageTile.image, &ebiten.DrawImageOptions{
-			GeoM: m,
-		})
-	}
+	// for _, imageTile := range s.imageTiles {
+	// 	m := ebiten.GeoM{}
+	// 	// m.Scale(1, 1)
+	// 	m.Translate(imageTile.position[0], imageTile.position[1])
+
+	// 	game.worldImage.DrawImage(imageTile.image, &ebiten.DrawImageOptions{
+	// 		GeoM: m,
+	// 	})
+	// }
 }
 
 type uiRenderer struct {
@@ -104,8 +126,9 @@ func (u *uiRenderer) Update(game *Game) error {
 	return nil
 }
 
-func (u *uiRenderer) Draw(screen *ebiten.Image, game *Game) {
+func (u *uiRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
 	ebitenutil.DebugPrint(screen, u.container.name)
+	return []imageTile{}
 }
 
 type input struct {
@@ -144,8 +167,8 @@ func (i *input) Update(game *Game) error {
 	return nil
 }
 
-func (i *input) Draw(screen *ebiten.Image, game *Game) {
-
+func (i *input) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	return []imageTile{}
 }
 
 type boxCollider struct {
@@ -156,7 +179,7 @@ type boxCollider struct {
 func newBoxCollider(container *entity, game *Game) *boxCollider {
 	bc := &boxCollider{
 		container: container,
-		collider:  resolv.NewObject(container.position[0], container.position[1], 8, 8),
+		collider:  resolv.NewObject(container.position[0], container.position[1], 6, 6),
 	}
 
 	game.space.Add(bc.collider)
@@ -176,11 +199,70 @@ func (b *boxCollider) Update(game *Game) error {
 	} else {
 		b.collider.X = b.container.position[0]
 		b.collider.Y = b.container.position[1]
+		b.collider.Update()
 	}
 
 	return nil
 }
 
-func (b *boxCollider) Draw(screen *ebiten.Image, game *Game) {
+func (b *boxCollider) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	return []imageTile{}
+}
 
+type basicAI struct {
+	container *entity
+	target    *entity
+}
+
+func newBasicAI(container *entity) *basicAI {
+	bai := &basicAI{
+		container: container,
+	}
+
+	return bai
+}
+
+func (bai *basicAI) Update(game *Game) error {
+	c := bai.container
+	t := bai.target
+
+	if t == nil {
+		for _, ent := range game.entities {
+			if ent.tags[0] == Player {
+				xDist := math.Abs(ent.position[0] - c.position[0])
+				yDist := math.Abs(ent.position[1] - c.position[1])
+
+				if xDist < tileSize*1 || yDist < tileSize*1 {
+					t = ent
+					break
+				}
+			}
+		}
+	}
+
+	if t != nil {
+		xDist := math.Abs(t.position[0] - c.position[0])
+		yDist := math.Abs(t.position[1] - c.position[1])
+
+		if xDist > tileSize || yDist > tileSize {
+			if t.position[0] > c.position[0] {
+				c.position[0] += 0.5
+			}
+			if t.position[0] < c.position[0] {
+				c.position[0] -= 0.5
+			}
+			if t.position[1] > c.position[1] {
+				c.position[1] += 0.5
+			}
+			if t.position[1] < c.position[1] {
+				c.position[1] -= 0.5
+			}
+		}
+	}
+
+	return nil
+}
+
+func (bai *basicAI) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	return []imageTile{}
 }

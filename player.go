@@ -11,8 +11,8 @@ func newPlayer(game *Game, pos f64.Vec2) *entity {
 	player := &entity{}
 
 	player.position = pos
-
 	player.active = true
+	player.tags = append(player.tags, Player)
 
 	ic := newInput(player)
 	player.addComponent(ic)
