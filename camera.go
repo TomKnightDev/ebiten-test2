@@ -31,14 +31,17 @@ func (c *Camera) Update(game *Game) error {
 	}
 
 	// if ebiten.IsKeyPressed(ebiten.KeyQ) {
-	// 	if c.ZoomFactor > -2400 {
-	// 		c.ZoomFactor -= 1
+	// 	if c.ZoomFactor > -80 {
+	// 		c.ZoomFactor -= 8
 	// 	}
 	// }
 	// if ebiten.IsKeyPressed(ebiten.KeyE) {
-	// 	if c.ZoomFactor < 2400 {
-	// 		c.ZoomFactor += 1
+	// 	if c.ZoomFactor < 80 {
+	// 		c.ZoomFactor += 8
 	// 	}
+	// }
+	// if ebiten.IsKeyPressed(ebiten.KeyR) {
+	// 	c.Reset()
 	// }
 
 	return nil

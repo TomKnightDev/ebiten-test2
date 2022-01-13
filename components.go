@@ -2,7 +2,6 @@ package main
 
 import (
 	"image"
-	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -190,14 +189,16 @@ func (b *boxCollider) Update(game *Game) error {
 	x := b.container.position[0] - b.collider.X
 	y := b.container.position[1] - b.collider.Y
 
-	if collision := b.collider.Check(x, y); collision != nil {
+	if collision := b.collider.Check(x, 0); collision != nil {
 		b.container.position[0] = b.collider.X
-		b.container.position[1] = b.collider.Y
-		// if len(collision.ObjectsByTags("wall")) > 0 {
-		// 	return true
-		// }
 	} else {
 		b.collider.X = b.container.position[0]
+		b.collider.Update()
+	}
+
+	if collision := b.collider.Check(0, y); collision != nil {
+		b.container.position[1] = b.collider.Y
+	} else {
 		b.collider.Y = b.container.position[1]
 		b.collider.Update()
 	}
@@ -206,63 +207,5 @@ func (b *boxCollider) Update(game *Game) error {
 }
 
 func (b *boxCollider) Draw(screen *ebiten.Image, game *Game) []imageTile {
-	return []imageTile{}
-}
-
-type basicAI struct {
-	container *entity
-	target    *entity
-}
-
-func newBasicAI(container *entity) *basicAI {
-	bai := &basicAI{
-		container: container,
-	}
-
-	return bai
-}
-
-func (bai *basicAI) Update(game *Game) error {
-	c := bai.container
-	t := bai.target
-
-	if t == nil {
-		for _, ent := range game.entities {
-			if ent.tags[0] == Player {
-				xDist := math.Abs(ent.position[0] - c.position[0])
-				yDist := math.Abs(ent.position[1] - c.position[1])
-
-				if xDist < tileSize*1 || yDist < tileSize*1 {
-					t = ent
-					break
-				}
-			}
-		}
-	}
-
-	if t != nil {
-		xDist := math.Abs(t.position[0] - c.position[0])
-		yDist := math.Abs(t.position[1] - c.position[1])
-
-		if xDist > tileSize || yDist > tileSize {
-			if t.position[0] > c.position[0] {
-				c.position[0] += 0.5
-			}
-			if t.position[0] < c.position[0] {
-				c.position[0] -= 0.5
-			}
-			if t.position[1] > c.position[1] {
-				c.position[1] += 0.5
-			}
-			if t.position[1] < c.position[1] {
-				c.position[1] -= 0.5
-			}
-		}
-	}
-
-	return nil
-}
-
-func (bai *basicAI) Draw(screen *ebiten.Image, game *Game) []imageTile {
 	return []imageTile{}
 }
