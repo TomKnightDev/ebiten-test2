@@ -12,8 +12,9 @@ require (
 	github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240 // indirect
 	github.com/kvartborg/vector v0.0.0-20200419093813-2cba0cabb4f0 // indirect
 	github.com/solarlune/resolv v0.5.1 // indirect
-	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
-	golang.org/x/mobile v0.0.0-20210902104108-5d9a33257ab5 // indirect
+	github.com/yohamta/furex v0.6.3 // indirect
+	golang.org/x/exp v0.0.0-20211008200323-95152d363a1c // indirect
+	golang.org/x/mobile v0.0.0-20210924032853-1c027f395ef7 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20210917161153-d61c044b1678 // indirect
+	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
 )

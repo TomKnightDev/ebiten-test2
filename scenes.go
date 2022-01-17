@@ -5,6 +5,7 @@ import (
 	"image"
 
 	"github.com/solarlune/resolv"
+	"github.com/yohamta/furex"
 	"golang.org/x/image/math/f64"
 )
 
@@ -20,6 +21,15 @@ func newTitleScene(game *Game) *entity {
 	titleScene.tags = append(titleScene.tags, Scene)
 
 	ur := newUiRenderer(titleScene)
+
+	ur.rootFlex.Direction = furex.Row
+	ur.rootFlex.Justify = furex.JustifyCenter
+	ur.rootFlex.AlignItems = furex.AlignItemCenter
+	ur.rootFlex.AlignContent = furex.AlignContentCenter
+	ur.rootFlex.Wrap = furex.Wrap
+
+	ur.rootFlex.AddChild(NewButton(50, 20, "Begin"))
+
 	titleScene.addComponent(ur)
 
 	game.entities = append(game.entities, titleScene)

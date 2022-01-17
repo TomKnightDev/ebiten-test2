@@ -57,6 +57,8 @@ func main() {
 	}
 	g.worldImage = ebiten.NewImage(worldWidth, worldHeight)
 
+	ebiten.SetWindowResizable(true)
+
 	ebiten.SetWindowSize(screenWidth*3, screenHeight*3)
 	ebiten.SetWindowTitle("Ebiten-test2")
 	if err := ebiten.RunGame(g); err != nil {

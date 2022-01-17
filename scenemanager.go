@@ -20,7 +20,7 @@ type SceneManager struct {
 }
 
 func (s *SceneManager) Update(game *Game) error {
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) && s.current.name == "Title Scene" {
 		s.GoTo(newMainScene(game))
 	}
 
