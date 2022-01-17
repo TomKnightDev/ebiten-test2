@@ -34,10 +34,20 @@ func (s *spriteRenderer) Update(game *Game) error {
 }
 
 func (s *spriteRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	its := []imageTile{}
+	*&s.imageTile.position = s.container.position
+	its = append(its, *s.imageTile)
+	return its
+
 	c := s.container.getComponent(&Camera{})
 
 	if c != nil {
 		m := c.(*Camera).worldMatrix()
+		// m.Translate(-(tileSize / 2), -(tileSize / 2))
+		// m.Translate(-s.container.position[0], -s.container.position[1])
+
+		// m.Rotate(s.container.rotation * 2 * math.Pi / 360)
+
 		m.Translate(s.container.position[0], s.container.position[1])
 
 		screen.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
@@ -142,18 +152,63 @@ func newInput(container *entity) *input {
 
 func (i *input) Update(game *Game) error {
 	c := i.container
+
+	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+		if HasTag(c, Player) {
+			ship := GetEntsWithTag(game, Ship)
+
+			c.active = false
+			ship[0].active = true
+			return nil
+		}
+	} else if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		if HasTag(c, Ship) {
+			player := GetEntsWithTag(game, Player)
+
+			c.active = false
+			player[0].active = true
+			return nil
+		}
+	}
+
+	x := 0
+	y := 0
+
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		c.position[0] -= 1
+		x -= 1
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		c.position[0] += 1
+		x += 1
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		c.position[1] -= 1
+		y -= 1
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		c.position[1] += 1
+		y += 1
 	}
+
+	if HasTag(c, Ship) {
+		if x == 1 && y == 0 {
+			c.rotation = 0
+		} else if x == 1 && y == 1 {
+			c.rotation = 45
+		} else if x == 0 && y == 1 {
+			c.rotation = 90
+		} else if x == -1 && y == 1 {
+			c.rotation = 135
+		} else if x == -1 && y == 0 {
+			c.rotation = 180
+		} else if x == -1 && y == -1 {
+			c.rotation = 225
+		} else if x == 0 && y == -1 {
+			c.rotation = 270
+		} else if x == 1 && y == -1 {
+			c.rotation = 315
+		}
+	}
+
+	c.position[0] += float64(x)
+	c.position[1] += float64(y)
 
 	// if ebiten.IsKeyPressed(ebiten.KeyR) {
 	// 	g.camera.Rotation += 1

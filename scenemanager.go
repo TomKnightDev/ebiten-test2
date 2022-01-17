@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -37,7 +39,10 @@ func (s *SceneManager) Update(game *Game) error {
 }
 
 func (s *SceneManager) Draw(screen *ebiten.Image, game *Game) []imageTile {
-	imageTiles := []imageTile{}
+	imageTiles := []struct {
+		e    entity
+		tile imageTile
+	}{}
 
 	for _, e := range game.entities {
 		if !e.active {
@@ -46,7 +51,10 @@ func (s *SceneManager) Draw(screen *ebiten.Image, game *Game) []imageTile {
 		for _, c := range e.components {
 			for _, im := range c.Draw(screen, game) {
 
-				imageTiles = append(imageTiles, im)
+				imageTiles = append(imageTiles, struct {
+					e    entity
+					tile imageTile
+				}{e: *e, tile: im})
 
 			}
 		}
@@ -54,9 +62,12 @@ func (s *SceneManager) Draw(screen *ebiten.Image, game *Game) []imageTile {
 
 	for _, imageTile := range imageTiles {
 		m := ebiten.GeoM{}
-		m.Translate(imageTile.position[0], imageTile.position[1])
 
-		game.worldImage.DrawImage(imageTile.image, &ebiten.DrawImageOptions{
+		m.Translate(-(tileSize / 2), -(tileSize / 2))
+		m.Rotate(imageTile.e.rotation * 2 * math.Pi / 360)
+		m.Translate(imageTile.tile.position[0], imageTile.tile.position[1])
+
+		game.worldImage.DrawImage(imageTile.tile.image, &ebiten.DrawImageOptions{
 			GeoM: m,
 		})
 	}

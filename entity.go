@@ -44,4 +44,5 @@ const (
 	Player Tag = iota
 	Enemy
 	Scene
+	Ship
 )

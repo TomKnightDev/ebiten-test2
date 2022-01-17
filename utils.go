@@ -18,3 +18,25 @@ type TileMap struct {
 	Tileswide  int `json:"tileswide"`
 	Tilewidth  int `json:"tilewidth"`
 }
+
+func HasTag(e *entity, tag Tag) bool {
+	for _, t := range e.tags {
+		if t == tag {
+			return true
+		}
+	}
+
+	return false
+}
+
+func GetEntsWithTag(game *Game, tag Tag) []*entity {
+	ents := []*entity{}
+
+	for _, e := range game.entities {
+		if HasTag(e, tag) {
+			ents = append(ents, e)
+		}
+	}
+
+	return ents
+}
