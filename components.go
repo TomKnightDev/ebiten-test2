@@ -35,41 +35,21 @@ func (s *spriteRenderer) Update(game *Game) error {
 }
 
 func (s *spriteRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	if !s.container.active {
+		return nil
+	}
+
+	if s.container.direction[0] != 0 || s.container.direction[1] != 0 {
+		mag := GetMag(s.container.direction)
+
+		s.container.position[0] += s.container.direction[0] / mag * 1.5
+		s.container.position[1] += s.container.direction[1] / mag * 1.5
+	}
+
+	s.imageTile.position = s.container.position
 	its := []imageTile{}
-	*&s.imageTile.position = s.container.position
 	its = append(its, *s.imageTile)
 	return its
-
-	c := s.container.getComponent(&Camera{})
-
-	if c != nil {
-		m := c.(*Camera).worldMatrix()
-		// m.Translate(-(tileSize / 2), -(tileSize / 2))
-		// m.Translate(-s.container.position[0], -s.container.position[1])
-
-		// m.Rotate(s.container.rotation * 2 * math.Pi / 360)
-
-		m.Translate(s.container.position[0], s.container.position[1])
-
-		screen.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
-			GeoM: m,
-		})
-
-		return []imageTile{}
-	} else {
-		return []imageTile{{
-			image:    s.imageTile.image,
-			position: s.container.position,
-			zOrder:   s.imageTile.zOrder,
-		}}
-
-		// m := ebiten.GeoM{}
-		// m.Translate(s.container.position[0], s.container.position[1])
-
-		// game.worldImage.DrawImage(s.imageTile.image, &ebiten.DrawImageOptions{
-		// 	GeoM: m,
-		// })
-	}
 }
 
 type spritesRenderer struct {
@@ -240,10 +220,10 @@ type boxCollider struct {
 	collider  *resolv.Object
 }
 
-func newBoxCollider(container *entity, game *Game) *boxCollider {
+func newBoxCollider(container *entity, game *Game, originTag string) *boxCollider {
 	bc := &boxCollider{
 		container: container,
-		collider:  resolv.NewObject(container.position[0], container.position[1], 6, 6),
+		collider:  resolv.NewObject(container.position[0], container.position[1], 6, 6, originTag),
 	}
 
 	game.space.Add(bc.collider)
@@ -254,14 +234,24 @@ func (b *boxCollider) Update(game *Game) error {
 	x := b.container.position[0] - b.collider.X
 	y := b.container.position[1] - b.collider.Y
 
-	if collision := b.collider.Check(x, 0); collision != nil {
+	if collision := b.collider.Check(x, 0, "wall"); collision != nil {
+		if b.collider.HasTags(Bullet.String()) {
+			b.container.active = false
+			return nil
+		}
+
 		b.container.position[0] = b.collider.X
 	} else {
 		b.collider.X = b.container.position[0]
 		b.collider.Update()
 	}
 
-	if collision := b.collider.Check(0, y); collision != nil {
+	if collision := b.collider.Check(0, y, "wall"); collision != nil {
+		if b.collider.HasTags(Bullet.String()) {
+			b.container.active = false
+			return nil
+		}
+
 		b.container.position[1] = b.collider.Y
 	} else {
 		b.collider.Y = b.container.position[1]
@@ -272,5 +262,58 @@ func (b *boxCollider) Update(game *Game) error {
 }
 
 func (b *boxCollider) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	return []imageTile{}
+}
+
+type shoots struct {
+	container *entity
+}
+
+func newShoots(container *entity) *shoots {
+	return &shoots{
+		container: container,
+	}
+}
+
+func (s *shoots) Update(game *Game) error {
+	return nil
+}
+
+func (s *shoots) Draw(screen *ebiten.Image, game *Game) []imageTile {
+	return []imageTile{}
+}
+
+type mouseInput struct {
+	container *entity
+}
+
+func newMouseInput(container *entity) *mouseInput {
+	return &mouseInput{
+		container: container,
+	}
+}
+
+func (m *mouseInput) Update(game *Game) error {
+	x, y := ebiten.CursorPosition()
+	camx := game.camera.Position[0]
+	camy := game.camera.Position[1]
+	m.container.position[0] = float64(x) + camx
+	m.container.position[1] = float64(y) + camy
+	c := game.camera.container
+
+	//Wrong place, all this input should probably be part of the input component
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		if shoot := c.getComponent(&shoots{}); shoot != nil {
+			xdir := m.container.position[0] - c.position[0]
+			ydir := m.container.position[1] - c.position[1]
+
+			newBullet(game, c.position, f64.Vec2{xdir, ydir}, Player)
+		}
+	}
+
+	return nil
+}
+
+func (m *mouseInput) Draw(screen *ebiten.Image, game *Game) []imageTile {
 	return []imageTile{}
 }

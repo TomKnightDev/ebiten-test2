@@ -10,6 +10,7 @@ type Game struct {
 	entities     []*entity
 	sceneManager *SceneManager
 	space        *resolv.Space
+	camera       *Camera
 }
 
 func init() {

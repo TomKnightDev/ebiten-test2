@@ -18,6 +18,7 @@ func newPlayer(game *Game, pos f64.Vec2) *entity {
 	player.addComponent(ic)
 
 	c := newCamera(player)
+	game.camera = c
 	player.addComponent(c)
 
 	// Tiles
@@ -43,8 +44,11 @@ func newPlayer(game *Game, pos f64.Vec2) *entity {
 	sr := newSpriteRenderer(player, ips[0])
 	player.addComponent(sr)
 
-	bc := newBoxCollider(player, game)
+	bc := newBoxCollider(player, game, Player.String())
 	player.addComponent(bc)
+
+	s := newShoots(player)
+	player.addComponent(s)
 
 	game.entities = append(game.entities, player)
 

@@ -1,5 +1,11 @@
 package main
 
+import (
+	"math"
+
+	"golang.org/x/image/math/f64"
+)
+
 type TileMap struct {
 	Tileshigh int `json:"tileshigh"`
 	Layers    []struct {
@@ -39,4 +45,8 @@ func GetEntsWithTag(game *Game, tag Tag) []*entity {
 	}
 
 	return ents
+}
+
+func GetMag(vec2 f64.Vec2) float64 {
+	return math.Sqrt(vec2[0]*vec2[0] + vec2[1]*vec2[1])
 }

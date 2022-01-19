@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -24,8 +26,13 @@ func (s *SceneManager) Update(game *Game) error {
 		s.GoTo(newMainScene(game))
 	}
 
-	for _, e := range game.entities {
+	for i, e := range game.entities {
 		if !e.active {
+			if HasTag(e, Bullet) {
+				bc := e.getComponent(&boxCollider{}).(*boxCollider)
+				game.space.Remove(bc.collider)
+				RemoveEntity(game, i)
+			}
 			continue
 		}
 		for _, c := range e.components {
@@ -43,6 +50,8 @@ func (s *SceneManager) Draw(screen *ebiten.Image, game *Game) []imageTile {
 		e    entity
 		tile imageTile
 	}{}
+
+	ebitenutil.DebugPrint(screen, fmt.Sprint(len(game.entities)))
 
 	for _, e := range game.entities {
 		if !e.active {
@@ -81,4 +90,15 @@ func (s *SceneManager) GoTo(scene *entity) {
 	}
 
 	s.current = scene
+}
+
+func RemoveEntity(game *Game, i int) {
+	if i >= len(game.entities) {
+		return
+	}
+
+	game.entities[i] = game.entities[len(game.entities)-1]
+	game.entities = game.entities[:len(game.entities)-1]
+
+	// return append(scenes[:s], scenes[s+1:]...)
 }

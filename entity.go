@@ -9,6 +9,7 @@ import (
 type entity struct {
 	name       string
 	position   f64.Vec2
+	direction  f64.Vec2
 	rotation   float64
 	active     bool
 	components []component
@@ -45,4 +46,21 @@ const (
 	Enemy
 	Scene
 	Ship
+	Bullet
 )
+
+func (t Tag) String() string {
+	switch t {
+	case Player:
+		return "player"
+	case Enemy:
+		return "enemy"
+	case Scene:
+		return "scene"
+	case Ship:
+		return "ship"
+	case Bullet:
+		return "bullet"
+	}
+	return "unknown"
+}

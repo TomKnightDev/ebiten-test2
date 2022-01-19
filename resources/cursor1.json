@@ -1,0 +1,22 @@
+{
+    "tileshigh": 1,
+    "layers": [
+        {
+            "tiles": [
+                {
+                    "x": 0,
+                    "rot": 0,
+                    "y": 0,
+                    "index": 0,
+                    "flipX": false,
+                    "tile": 2438
+                }
+            ],
+            "name": "Layer 0",
+            "number": 0
+        }
+    ],
+    "tileheight": 8,
+    "tileswide": 1,
+    "tilewidth": 8
+}

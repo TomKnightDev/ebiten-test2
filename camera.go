@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/math/f64"
 )
@@ -28,16 +30,16 @@ func (c *Camera) Update(game *Game) error {
 		1: c.container.position[1] - c.viewportCenter()[1],
 	}
 
-	// if ebiten.IsKeyPressed(ebiten.KeyQ) {
-	// 	if c.ZoomFactor > -80 {
-	// 		c.ZoomFactor -= 8
-	// 	}
-	// }
-	// if ebiten.IsKeyPressed(ebiten.KeyE) {
-	// 	if c.ZoomFactor < 80 {
-	// 		c.ZoomFactor += 8
-	// 	}
-	// }
+	if ebiten.IsKeyPressed(ebiten.KeyQ) {
+		if c.ZoomFactor > -80 {
+			c.ZoomFactor -= 8
+		}
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyE) {
+		if c.ZoomFactor < 80 {
+			c.ZoomFactor += 8
+		}
+	}
 	// if ebiten.IsKeyPressed(ebiten.KeyR) {
 	// 	c.Reset()
 	// }
@@ -63,10 +65,10 @@ func (c *Camera) worldMatrix() ebiten.GeoM {
 	m.Translate(-c.container.position[0], -c.container.position[1])
 	// We want to scale and rotate around center of image / screen
 	// m.Translate(-c.viewportCenter()[0], -c.viewportCenter()[1])
-	// m.Scale(
-	// 	math.Pow(1.01, float64(c.ZoomFactor)),
-	// 	math.Pow(1.01, float64(c.ZoomFactor)),
-	// )
+	m.Scale(
+		math.Pow(1.01, float64(c.ZoomFactor)),
+		math.Pow(1.01, float64(c.ZoomFactor)),
+	)
 	// m.Rotate(float64(c.Rotation) * 2 * math.Pi / 360)
 	m.Translate(c.viewportCenter()[0], c.viewportCenter()[1])
 	return m

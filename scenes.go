@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"image"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/solarlune/resolv"
 	"github.com/yohamta/furex"
 	"golang.org/x/image/math/f64"
@@ -85,8 +86,10 @@ func newMainScene(game *Game) *entity {
 	// TODO: Move to better place
 	newPlayer(game, f64.Vec2{
 		0: 18 * tileSize,
-		1: 15 * tileSize,
+		1: 18 * tileSize,
 	})
+
+	newMouseCursor(game)
 
 	// newEnemy(game, f64.Vec2{
 	// 	0: 20 * tileSize,
@@ -107,6 +110,8 @@ func newMainScene(game *Game) *entity {
 		0: 2 * tileSize,
 		1: 2 * tileSize,
 	})
+
+	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 
 	return mainScene
 }
