@@ -14,6 +14,8 @@ func newBullet(game *Game, pos f64.Vec2, dir f64.Vec2, originTag Tag) *entity {
 	bullet.direction = dir
 	bullet.active = true
 	bullet.tags = append(bullet.tags, Bullet)
+	bullet.lifetime = 100
+	bullet.velocity = 2
 
 	// Tiles
 	if err := json.Unmarshal(bullet1, &tileMap); err != nil {
@@ -38,7 +40,7 @@ func newBullet(game *Game, pos f64.Vec2, dir f64.Vec2, originTag Tag) *entity {
 	sr := newSpriteRenderer(bullet, ips[0])
 	bullet.addComponent(sr)
 
-	bc := newBoxCollider(bullet, game, Bullet.String())
+	bc := newBoxCollider(bullet, game, Bullet.String(), 2)
 	bullet.addComponent(bc)
 
 	game.entities = append(game.entities, bullet)

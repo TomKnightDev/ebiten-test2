@@ -59,7 +59,9 @@ func main() {
 	g := &Game{
 		space: resolv.NewSpace(384, 384, 4, 4),
 	}
-	g.worldImage = ebiten.NewImage(worldWidth, worldHeight)
+
+	// Not sure why the neg half tile size is needed here, but it is
+	g.worldImage = ebiten.NewImage(worldWidth-(tileSize/2), worldHeight-(tileSize/2))
 
 	ebiten.SetWindowResizable(true)
 

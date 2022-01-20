@@ -3,6 +3,7 @@ package main
 import (
 	"math"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"golang.org/x/image/math/f64"
 )
 
@@ -49,4 +50,15 @@ func GetEntsWithTag(game *Game, tag Tag) []*entity {
 
 func GetMag(vec2 f64.Vec2) float64 {
 	return math.Sqrt(vec2[0]*vec2[0] + vec2[1]*vec2[1])
+}
+
+func GetCursorPos(game *Game) f64.Vec2 {
+	x, y := ebiten.CursorPosition()
+	camx := game.camera.Position[0]
+	camy := game.camera.Position[1]
+
+	return f64.Vec2{
+		float64(x) + camx,
+		float64(y) + camy,
+	}
 }

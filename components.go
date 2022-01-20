@@ -42,8 +42,8 @@ func (s *spriteRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
 	if s.container.direction[0] != 0 || s.container.direction[1] != 0 {
 		mag := GetMag(s.container.direction)
 
-		s.container.position[0] += s.container.direction[0] / mag * 1.5
-		s.container.position[1] += s.container.direction[1] / mag * 1.5
+		s.container.position[0] += s.container.direction[0] / mag * s.container.velocity
+		s.container.position[1] += s.container.direction[1] / mag * s.container.velocity
 	}
 
 	s.imageTile.position = s.container.position
@@ -128,17 +128,42 @@ func (u *uiRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
 }
 
 type input struct {
-	container *entity
+	container             *entity
+	actionTurnTime        int
+	currentActionTurnTime int
 }
 
-func newInput(container *entity) *input {
+func newInput(container *entity, actionTurnTime int) *input {
 	return &input{
-		container: container,
+		container:             container,
+		actionTurnTime:        actionTurnTime,
+		currentActionTurnTime: 0,
 	}
 }
 
 func (i *input) Update(game *Game) error {
 	c := i.container
+
+	i.currentActionTurnTime++
+
+	if i.currentActionTurnTime >= i.actionTurnTime && ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		i.currentActionTurnTime = 0
+
+		if shoot := c.getComponent(&shoots{}); shoot != nil {
+
+			if HasTag(c, Ship) {
+				// xdir := c.direction[0] - c.position[0]
+				// ydir := c.direction[1] - c.position[1]
+				b := newBullet(game, c.position, c.direction, Ship)
+				b.velocity *= 2
+			} else if HasTag(c, Player) {
+				cpos := GetCursorPos(game)
+				xdir := cpos[0] - c.position[0]
+				ydir := cpos[1] - c.position[1]
+				newBullet(game, c.position, f64.Vec2{xdir, ydir}, Player)
+			}
+		}
+	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
 		if HasTag(c, Player) {
@@ -158,8 +183,8 @@ func (i *input) Update(game *Game) error {
 		}
 	}
 
-	x := 0
-	y := 0
+	x := 0.0
+	y := 0.0
 
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		x -= 1
@@ -193,6 +218,10 @@ func (i *input) Update(game *Game) error {
 			c.rotation = 315
 		}
 
+		if x != 0 || y != 0 {
+			c.direction = f64.Vec2{x, y}
+		}
+
 		x *= 2
 		y *= 2
 	}
@@ -220,10 +249,10 @@ type boxCollider struct {
 	collider  *resolv.Object
 }
 
-func newBoxCollider(container *entity, game *Game, originTag string) *boxCollider {
+func newBoxCollider(container *entity, game *Game, originTag string, size float64) *boxCollider {
 	bc := &boxCollider{
 		container: container,
-		collider:  resolv.NewObject(container.position[0], container.position[1], 6, 6, originTag),
+		collider:  resolv.NewObject(container.position[0], container.position[1], size, size, originTag),
 	}
 
 	game.space.Add(bc.collider)
@@ -294,22 +323,9 @@ func newMouseInput(container *entity) *mouseInput {
 }
 
 func (m *mouseInput) Update(game *Game) error {
-	x, y := ebiten.CursorPosition()
-	camx := game.camera.Position[0]
-	camy := game.camera.Position[1]
-	m.container.position[0] = float64(x) + camx
-	m.container.position[1] = float64(y) + camy
-	c := game.camera.container
-
-	//Wrong place, all this input should probably be part of the input component
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		if shoot := c.getComponent(&shoots{}); shoot != nil {
-			xdir := m.container.position[0] - c.position[0]
-			ydir := m.container.position[1] - c.position[1]
-
-			newBullet(game, c.position, f64.Vec2{xdir, ydir}, Player)
-		}
-	}
+	cpos := GetCursorPos(game)
+	m.container.position[0] = cpos[0]
+	m.container.position[1] = cpos[1]
 
 	return nil
 }

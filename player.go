@@ -14,7 +14,7 @@ func newPlayer(game *Game, pos f64.Vec2) *entity {
 	player.active = true
 	player.tags = append(player.tags, Player)
 
-	ic := newInput(player)
+	ic := newInput(player, 10)
 	player.addComponent(ic)
 
 	c := newCamera(player)
@@ -44,7 +44,7 @@ func newPlayer(game *Game, pos f64.Vec2) *entity {
 	sr := newSpriteRenderer(player, ips[0])
 	player.addComponent(sr)
 
-	bc := newBoxCollider(player, game, Player.String())
+	bc := newBoxCollider(player, game, Player.String(), 6)
 	player.addComponent(bc)
 
 	s := newShoots(player)

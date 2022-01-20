@@ -14,7 +14,7 @@ func newShip(game *Game, pos f64.Vec2) *entity {
 	ship.active = false
 	ship.tags = append(ship.tags, Ship)
 
-	ic := newInput(ship)
+	ic := newInput(ship, 10)
 	ship.addComponent(ic)
 
 	c := newCamera(ship)
@@ -43,8 +43,11 @@ func newShip(game *Game, pos f64.Vec2) *entity {
 	sr := newSpriteRenderer(ship, ips[0])
 	ship.addComponent(sr)
 
-	bc := newBoxCollider(ship, game, Ship.String())
+	bc := newBoxCollider(ship, game, Ship.String(), 6)
 	ship.addComponent(bc)
+
+	sh := newShoots(ship)
+	ship.addComponent(sh)
 
 	game.entities = append(game.entities, ship)
 

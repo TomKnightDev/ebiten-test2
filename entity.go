@@ -7,13 +7,16 @@ import (
 )
 
 type entity struct {
-	name       string
-	position   f64.Vec2
-	direction  f64.Vec2
-	rotation   float64
-	active     bool
-	components []component
-	tags       []Tag
+	name            string
+	position        f64.Vec2
+	direction       f64.Vec2
+	velocity        float64
+	rotation        float64
+	active          bool
+	components      []component
+	tags            []Tag
+	lifetime        int
+	currentLifetime int
 }
 
 func (e *entity) addComponent(comp component) {

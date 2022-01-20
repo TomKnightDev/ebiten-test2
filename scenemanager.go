@@ -9,16 +9,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-var (
-	transitionFrom = ebiten.NewImage(384, 384)
-	transitionTo   = ebiten.NewImage(384, 384)
-)
-
-// const transitionMaxCount = 20
-
 type SceneManager struct {
 	current *entity
-	next    *entity
 }
 
 func (s *SceneManager) Update(game *Game) error {
@@ -27,6 +19,14 @@ func (s *SceneManager) Update(game *Game) error {
 	}
 
 	for i, e := range game.entities {
+		if e.lifetime > 0 {
+			e.currentLifetime++
+			if e.currentLifetime >= e.lifetime {
+				bc := e.getComponent(&boxCollider{}).(*boxCollider)
+				game.space.Remove(bc.collider)
+				RemoveEntity(game, i)
+			}
+		}
 		if !e.active {
 			if HasTag(e, Bullet) {
 				bc := e.getComponent(&boxCollider{}).(*boxCollider)
