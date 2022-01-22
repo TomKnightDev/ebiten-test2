@@ -25,7 +25,7 @@ func (bai *basicAI) Update(game *Game) error {
 
 	if t == nil {
 		for _, ent := range game.entities {
-			if ent.tags[0] == Player {
+			if len(ent.tags) > 0 && ent.tags[0] == Player {
 				xDist := math.Abs(ent.position[0] - c.position[0])
 				yDist := math.Abs(ent.position[1] - c.position[1])
 

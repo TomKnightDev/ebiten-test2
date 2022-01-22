@@ -91,20 +91,20 @@ func newMainScene(game *Game) *entity {
 
 	newMouseCursor(game)
 
-	// newEnemy(game, f64.Vec2{
-	// 	0: 20 * tileSize,
-	// 	1: 18 * tileSize,
-	// })
+	newEnemy(game, f64.Vec2{
+		0: 20 * tileSize,
+		1: 18 * tileSize,
+	})
 
-	// newEnemy(game, f64.Vec2{
-	// 	0: 21 * tileSize,
-	// 	1: 18 * tileSize,
-	// })
+	newEnemy(game, f64.Vec2{
+		0: 21 * tileSize,
+		1: 18 * tileSize,
+	})
 
-	// newEnemy(game, f64.Vec2{
-	// 	0: 20 * tileSize,
-	// 	1: 19 * tileSize,
-	// })
+	newEnemy(game, f64.Vec2{
+		0: 20 * tileSize,
+		1: 19 * tileSize,
+	})
 
 	newShip(game, f64.Vec2{
 		0: 2 * tileSize,
