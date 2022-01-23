@@ -199,6 +199,14 @@ func (i *input) Update(game *Game) error {
 		y += 1
 	}
 
+	if c.position[0]+x >= screenWidth || c.position[0]+x <= 0 {
+		x = 0
+	}
+
+	if c.position[1]+y >= screenHeight || c.position[1]+y <= 0 {
+		y = 0
+	}
+
 	if HasTag(c, Ship) {
 		if x == 1 && y == 0 {
 			c.rotation = 0
