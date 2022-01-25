@@ -42,6 +42,16 @@ func (e *entity) getComponent(withType component) component {
 	return nil
 }
 
+func (e *entity) tagsAsStrings() []string {
+	var tagsAsStrings = []string{}
+
+	for _, tag := range e.tags {
+		tagsAsStrings = append(tagsAsStrings, tag.String())
+	}
+
+	return tagsAsStrings
+}
+
 type Tag int
 
 const (

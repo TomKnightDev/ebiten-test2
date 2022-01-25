@@ -257,10 +257,10 @@ type boxCollider struct {
 	collider  *resolv.Object
 }
 
-func newBoxCollider(container *entity, game *Game, originTag string, size float64) *boxCollider {
+func newBoxCollider(container *entity, game *Game, originTag []string, size float64) *boxCollider {
 	bc := &boxCollider{
 		container: container,
-		collider:  resolv.NewObject(container.position[0], container.position[1], size, size, originTag),
+		collider:  resolv.NewObject(container.position[0], container.position[1], size, size, originTag...),
 	}
 
 	game.space.Add(bc.collider)
@@ -271,25 +271,41 @@ func (b *boxCollider) Update(game *Game) error {
 	x := b.container.position[0] - b.collider.X
 	y := b.container.position[1] - b.collider.Y
 
-	if collision := b.collider.Check(x, 0, "wall"); collision != nil {
-		if b.collider.HasTags(Bullet.String()) {
-			b.container.active = false
-			return nil
-		}
+	if collision := b.collider.Check(x, 0); collision != nil {
+		if !collision.HasTags(b.collider.Tags()...) {
 
-		b.container.position[0] = b.collider.X
+			if HasTag(b.container, Bullet) {
+				b.container.active = false
+				return nil
+			}
+
+			if HasTag(b.container, Enemy) {
+				b.container.active = false
+				return nil
+			}
+
+			b.container.position[0] = b.collider.X
+		}
 	} else {
 		b.collider.X = b.container.position[0]
 		b.collider.Update()
 	}
 
-	if collision := b.collider.Check(0, y, "wall"); collision != nil {
-		if b.collider.HasTags(Bullet.String()) {
-			b.container.active = false
-			return nil
-		}
+	if collision := b.collider.Check(0, y); collision != nil {
+		if !collision.HasTags(b.collider.Tags()...) {
 
-		b.container.position[1] = b.collider.Y
+			if HasTag(b.container, Bullet) {
+				b.container.active = false
+				return nil
+			}
+
+			if HasTag(b.container, Enemy) {
+				b.container.active = false
+				return nil
+			}
+
+			b.container.position[1] = b.collider.Y
+		}
 	} else {
 		b.collider.Y = b.container.position[1]
 		b.collider.Update()

@@ -44,7 +44,7 @@ func newPlayer(game *Game, pos f64.Vec2) *entity {
 	sr := newSpriteRenderer(player, ips[0])
 	player.addComponent(sr)
 
-	bc := newBoxCollider(player, game, Player.String(), 6)
+	bc := newBoxCollider(player, game, []string{Player.String()}, 6)
 	player.addComponent(bc)
 
 	s := newShoots(player)

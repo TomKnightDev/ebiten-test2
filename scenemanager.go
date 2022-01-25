@@ -28,7 +28,7 @@ func (s *SceneManager) Update(game *Game) error {
 			}
 		}
 		if !e.active {
-			if HasTag(e, Bullet) {
+			if HasTag(e, Bullet) || HasTag(e, Enemy) {
 				bc := e.getComponent(&boxCollider{}).(*boxCollider)
 				game.space.Remove(bc.collider)
 				RemoveEntity(game, i)

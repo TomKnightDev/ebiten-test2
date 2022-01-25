@@ -40,7 +40,7 @@ func newEnemy(game *Game, pos f64.Vec2) *entity {
 	sr := newSpriteRenderer(enemy, ips[0])
 	enemy.addComponent(sr)
 
-	bc := newBoxCollider(enemy, game, Enemy.String(), 6)
+	bc := newBoxCollider(enemy, game, []string{Enemy.String()}, 6)
 	enemy.addComponent(bc)
 
 	game.entities = append(game.entities, enemy)

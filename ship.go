@@ -43,7 +43,7 @@ func newShip(game *Game, pos f64.Vec2) *entity {
 	sr := newSpriteRenderer(ship, ips[0])
 	ship.addComponent(sr)
 
-	bc := newBoxCollider(ship, game, Ship.String(), 6)
+	bc := newBoxCollider(ship, game, []string{Ship.String()}, 6)
 	ship.addComponent(bc)
 
 	sh := newShoots(ship)

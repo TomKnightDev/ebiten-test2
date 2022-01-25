@@ -40,7 +40,7 @@ func newBullet(game *Game, pos f64.Vec2, dir f64.Vec2, originTag Tag) *entity {
 	sr := newSpriteRenderer(bullet, ips[0])
 	bullet.addComponent(sr)
 
-	bc := newBoxCollider(bullet, game, Bullet.String(), 2)
+	bc := newBoxCollider(bullet, game, []string{originTag.String()}, 2)
 	bullet.addComponent(bc)
 
 	game.entities = append(game.entities, bullet)
