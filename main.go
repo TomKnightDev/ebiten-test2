@@ -8,13 +8,14 @@ import (
 
 	_ "embed"
 
+	"github.com/gabstv/ebiten-imgui/renderer"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/solarlune/resolv"
 )
 
 const (
-	screenWidth  = 384
-	screenHeight = 384
+	screenWidth  = 768
+	screenHeight = 768
 )
 
 const (
@@ -57,7 +58,8 @@ func init() {
 
 func main() {
 	g := &Game{
-		space: resolv.NewSpace(384, 384, 4, 4),
+		space:     resolv.NewSpace(384, 384, 4, 4),
+		uiManager: renderer.New(nil),
 	}
 
 	// Not sure why the neg half tile size is needed here, but it is
@@ -65,7 +67,7 @@ func main() {
 
 	ebiten.SetWindowResizable(true)
 
-	ebiten.SetWindowSize(screenWidth*3, screenHeight*3)
+	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle("Ebiten-test2")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)

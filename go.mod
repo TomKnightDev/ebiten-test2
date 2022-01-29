@@ -3,7 +3,9 @@ module github.com/tomknightdev/ebiten-test2
 go 1.17
 
 require (
+	github.com/gabstv/ebiten-imgui v0.3.1
 	github.com/hajimehoshi/ebiten/v2 v2.2.3
+	github.com/inkyblackness/imgui-go/v4 v4.4.0
 	github.com/solarlune/resolv v0.5.1
 	github.com/yohamta/furex v0.6.3
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410

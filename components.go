@@ -6,7 +6,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/solarlune/resolv"
-	"github.com/yohamta/furex"
 	"golang.org/x/image/math/f64"
 )
 
@@ -104,26 +103,24 @@ func (s *spritesRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
 
 type uiRenderer struct {
 	container *entity
-	rootFlex  *furex.Flex
+	update    UiUpdate
 }
 
-func newUiRenderer(container *entity) *uiRenderer {
-	rf := furex.NewFlex(screenWidth, screenHeight)
+func newUiRenderer(container *entity, update UiUpdate) *uiRenderer {
 
 	return &uiRenderer{
 		container: container,
-		rootFlex:  rf,
+		update:    update,
 	}
 }
 
 func (u *uiRenderer) Update(game *Game) error {
-	u.rootFlex.Update()
-	return nil
+	return u.update(game)
 }
 
 func (u *uiRenderer) Draw(screen *ebiten.Image, game *Game) []imageTile {
-	u.rootFlex.Draw(screen)
 	ebitenutil.DebugPrint(screen, u.container.name)
+	game.uiManager.Draw(screen)
 	return []imageTile{}
 }
 

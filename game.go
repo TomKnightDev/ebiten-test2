@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gabstv/ebiten-imgui/renderer"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/solarlune/resolv"
 )
@@ -11,9 +12,7 @@ type Game struct {
 	sceneManager *SceneManager
 	space        *resolv.Space
 	camera       *Camera
-}
-
-func init() {
+	uiManager    *renderer.Manager
 }
 
 func (game *Game) Update() error {
@@ -33,5 +32,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+	g.uiManager.SetDisplaySize(screenWidth, screenHeight)
 	return screenWidth, screenHeight
 }

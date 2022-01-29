@@ -17,8 +17,9 @@ type Camera struct {
 
 func newCamera(container *entity) *Camera {
 	c := &Camera{
-		container: container,
-		ViewPort:  f64.Vec2{screenWidth, screenHeight},
+		container:  container,
+		ViewPort:   f64.Vec2{screenWidth, screenHeight},
+		ZoomFactor: 80,
 	}
 
 	return c

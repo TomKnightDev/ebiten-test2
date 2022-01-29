@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"image"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/inkyblackness/imgui-go/v4"
 	"github.com/solarlune/resolv"
-	"github.com/yohamta/furex"
 	"golang.org/x/image/math/f64"
 )
 
@@ -21,20 +22,35 @@ func newTitleScene(game *Game) *entity {
 	titleScene.active = true
 	titleScene.tags = append(titleScene.tags, Scene)
 
-	ur := newUiRenderer(titleScene)
-
-	ur.rootFlex.Direction = furex.Row
-	ur.rootFlex.Justify = furex.JustifyCenter
-	ur.rootFlex.AlignItems = furex.AlignItemCenter
-	ur.rootFlex.AlignContent = furex.AlignContentCenter
-	ur.rootFlex.Wrap = furex.Wrap
-
-	ur.rootFlex.AddChild(NewButton(50, 20, "Begin"))
-
+	ur := newUiRenderer(titleScene, titleUpdate)
 	titleScene.addComponent(ur)
 
 	game.entities = append(game.entities, titleScene)
 	return titleScene
+}
+
+type UiUpdate func(*Game) error
+
+func titleUpdate(game *Game) error {
+	game.uiManager.Update(1.0 / 60.0)
+	game.uiManager.BeginFrame()
+	{
+		flags := imgui.WindowFlagsNone
+		flags |= imgui.WindowFlagsNoTitleBar
+		flags |= imgui.WindowFlagsNoResize
+
+		imgui.SetNextWindowPos(imgui.Vec2{(screenWidth - imgui.WindowSize().X) / 2, (screenHeight - imgui.WindowSize().Y) / 2})
+		imgui.BeginV("Main Menu", nil, flags)
+
+		imgui.SetNextWindowPos(imgui.Vec2{imgui.WindowSize().X / 2, imgui.WindowSize().Y / 2})
+		if imgui.Button("Start Game") {
+			game.sceneManager.GoTo(newMainScene(game))
+		}
+
+		imgui.End()
+	}
+	game.uiManager.EndFrame()
+	return nil
 }
 
 func newMainScene(game *Game) *entity {
@@ -48,7 +64,7 @@ func newMainScene(game *Game) *entity {
 	mainScene.active = true
 	mainScene.tags = append(mainScene.tags, Scene)
 
-	ur := newUiRenderer(mainScene)
+	ur := newUiRenderer(mainScene, mainUpdate)
 	mainScene.addComponent(ur)
 
 	// Tiles
@@ -114,4 +130,20 @@ func newMainScene(game *Game) *entity {
 	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 
 	return mainScene
+}
+
+func mainUpdate(game *Game) error {
+	game.uiManager.Update(1.0 / 60.0)
+	game.uiManager.BeginFrame()
+	{
+		if imgui.BeginMainMenuBar() {
+			imgui.Text("Health: 100")
+			if imgui.Button("Quit") {
+				os.Exit(0)
+			}
+			imgui.EndMainMenuBar()
+		}
+	}
+	game.uiManager.EndFrame()
+	return nil
 }
